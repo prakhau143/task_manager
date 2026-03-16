@@ -1,226 +1,174 @@
-# Task Manager – Django + Three.js
+# Task Management Application (Oritso Screening Assignment)
 
-## 1. Project Overview
+## 2.1.3.1 Overview of what is being built
 
-This is a Task Management web application built with Django and SQLite following the MVC/MVT pattern.  
-It allows users to **create, read, update, delete, and search tasks**, with a **3D task board** implemented using **Three.js**.
+This repository contains a **Task Management web application** built for the Oritso Private Limited screening assignment.
 
-Each task is visualized as a rotating cube whose color reflects its status (Todo, In Progress, Done, Blocked).  
-The UI uses a **dark futuristic theme**, **glassmorphism cards**, **gradient buttons**, and a **Three.js floating starfield background**.
+The application demonstrates the required MVC/MVT areas:
+
+- **Create** tasks from a web UI
+- **Read** tasks from a web UI (dashboard + task details)
+- **Update** tasks from a web UI (edit form + inline status update)
+- **Delete** tasks from a web UI (delete confirmation)
+- **Search** tasks from a web UI (query + status + due date)
+
+The UI is modern and interactive (dark futuristic theme, glassmorphism, gradient buttons), and includes:
+
+- **Three.js animated starfield background**
+- **Three.js 3D Task Board** where tasks appear as rotating cubes, color-coded by status and clickable to open details
 
 ---
 
-## 2. Technology Stack
+## 2.1.3.2 Explanation of DB Design
 
-- **Backend**: Python 3, Django 5
-- **Database**: SQLite
-- **Frontend**: Django Templates (HTML, CSS, JavaScript)
-- **3D/Graphics**: Three.js
+### 2.1.3.2.1 ER Diagram
 
----
+**Entities**
 
-## 3. Database Design
+- `Task`
 
-### 3.1 ER Diagram (Description)
+**Relationships**
 
-Entities:
+- This implementation stores `created_by` and `last_updated_by` as strings (`username (#id)`) for simplicity and to match the assignment’s “Name and Id” requirement.
 
-- **Task**
+ER (textual):
 
-Relationships:
+- `Task` (standalone)
 
-- Standalone entity in this version. `created_by` and `last_updated_by` are stored as string fields (user name / id) rather than foreign keys for simplicity.
-
-### 3.2 Data Dictionary
+### 2.1.3.2.2 Data Dictionary
 
 **Table: tasks_task**
 
-| Column           | Type         | Nullable | Description                                      |
-|------------------|-------------|----------|--------------------------------------------------|
-| id               | bigint PK   | No       | Auto-increment primary key                       |
-| title            | varchar(200)| No       | Task title                                       |
-| description      | text        | Yes      | Detailed description                             |
-| due_date         | date        | Yes      | Task due date                                    |
-| status           | varchar(20) | No       | One of `todo`, `in_progress`, `done`, `blocked` |
-| remarks          | text        | Yes      | Additional comments / notes                      |
-| created_on       | datetime    | No       | Timestamp when the task was created              |
-| last_updated_on  | datetime    | No       | Timestamp of last modification                   |
-| created_by       | varchar(150)| No       | Name/id of creator (stored as string)           |
-| last_updated_by  | varchar(150)| No       | Name/id of last updater (stored as string)      |
+| Column          | Type          | Nullable | Description |
+|-----------------|---------------|----------|-------------|
+| id              | bigint (PK)   | No       | Auto-increment primary key |
+| title           | varchar(200)  | No       | Task Title |
+| description     | text          | Yes      | Task Description |
+| due_date        | date          | Yes      | Task Due Date |
+| status          | varchar(20)   | No       | Task Status (`todo`, `in_progress`, `done`, `blocked`) |
+| remarks         | text          | Yes      | Task Remarks |
+| created_on      | timestamptz   | No       | Created On (Time Stamp) |
+| last_updated_on | timestamptz   | No       | Last Updated On (Time Stamp) |
+| created_by      | varchar(150)  | No       | Created By (Name + Id as string) |
+| last_updated_by | varchar(150)  | No       | Last Updated By (Name + Id as string) |
 
-### 3.3 Indexes
+### 2.1.3.2.3 Documentation of Indexes used
 
-Indexes are applied via model field options:
+Indexes are defined at model level using `db_index=True` to speed up searches and filters:
 
-- `title` – `db_index=True` for faster search by title
-- `status` – `db_index=True` for filtering by status
-- `due_date` – `db_index=True` for date-based filtering
+- `title` (search)
+- `status` (filter)
+- `due_date` (filter)
 
-These cover the main query axes of the search feature.
+### 2.1.3.2.4 Code first or DB First and why?
 
-### 3.4 Code-First Approach
-
-- **Approach**: Code-first using Django models and migrations.
-- **Reasons**:
-  - Schema is version-controlled alongside application code.
-  - Changes flow through migration files, which are easy to apply and roll back.
-  - Faster development and safer evolution of the schema compared to editing SQL manually.
+- **Approach used**: **Code First** (Django ORM + migrations)
+- **Why**:
+  - Version controlled schema changes via migration files
+  - Faster development workflow for an assignment timeline
+  - Easier to reproduce setup on any machine
 
 ---
 
-## 4. Application Structure
+## 2.1.3.3 Structure of the application
 
-Project layout:
+### 2.1.3.3.2 Standard MVC server-side page rendering
 
-```text
-taskmanager/
-  manage.py
-  requirements.txt
+This project uses **server-side rendering (MPA)** with Django templates (Django MVT pattern).
 
-  taskmanager/
-    __init__.py
-    settings.py
-    urls.py
-    asgi.py
-    wsgi.py
-
-  tasks/
-    __init__.py
-    apps.py
-    models.py
-    forms.py
-    views.py
-    urls.py
-    admin.py
-    migrations/
-      __init__.py
-
-  templates/
-    base.html
-    tasks/
-      task_list.html
-      task_form.html
-      task_confirm_delete.html
-
-  static/
-    css/
-      main.css
-    js/
-      stars.js
-      task_board.js
-```
-
-Key components:
-
-- **Models (`tasks/models.py`)** – `Task` model with all required fields and indexes.
-- **Forms (`tasks/forms.py`)** – `TaskForm` as a `ModelForm` with basic widgets.
-- **Views (`tasks/views.py`)** – Class-based views:
-  - `TaskListView` – dashboard listing with filters
-  - `TaskSearchView` – dedicated search endpoint reusing the same template
-  - `TaskCreateView` – create task
-  - `TaskUpdateView` – edit task
-  - `TaskDeleteView` – delete confirmation and delete
-- **URLs (`tasks/urls.py`)** – routes for all views, included from `taskmanager/urls.py`.
-- **Templates** – `base.html` layout plus task-specific pages.
-- **Static** – shared CSS (`main.css`), `stars.js` for animated background, `task_board.js` for the 3D task cubes.
+- **Models**: `tasks/models.py`
+- **Views/Controllers**: `tasks/views.py` (class-based views)
+- **Templates**: `templates/` (HTML pages)
+- **Static assets**: `static/` (CSS/JS)
 
 ---
 
-## 5. Installation Steps
+## 2.1.3.4 Frontend Structure
 
-### 5.1 Prerequisites
+### 2.1.3.4.1 What kind of frontend has been used and why?
 
-- Python 3.10+ (recommended)
-- pip
+- **Django Templates + HTML/CSS/JS** were used to keep the solution simple, fast to run, and easy to demonstrate.
+- **Three.js** is used for:
+  - Starfield background animation
+  - 3D Task Board (rotating, color-coded, clickable cubes)
 
-### 5.2 Setup
+### 2.1.3.4.2 Web or mobile?
 
-From the project root (`taskmanager/` directory containing `manage.py`):
+- **Web frontend** (Django templates)
+
+---
+
+## 2.1.3.5 Build and install
+
+### 2.1.3.5.1 Environment details and dependencies
+
+- Python 3.10+ recommended
+- Django 5
+- PostgreSQL 14+ recommended
+
+Dependencies are listed in `requirements.txt`.
+
+### 2.1.3.5.2 Instructions to build / compile
+
+This is a Python/Django project; no compile step is required. Install dependencies via pip.
+
+### 2.1.3.5.3 Instructions to run
+
+#### 1) Create a virtual environment
 
 ```bash
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
-
 pip install -r requirements.txt
 ```
 
-### 5.3 Database Migrations
+#### 2) Create PostgreSQL database and user
+
+```sql
+CREATE DATABASE task_db;
+CREATE USER task_user WITH ENCRYPTED PASSWORD 'task_password';
+GRANT ALL PRIVILEGES ON DATABASE task_db TO task_user;
+```
+
+#### 3) Set environment variables (recommended)
+
+```bash
+export POSTGRES_DB=task_db
+export POSTGRES_USER=task_user
+export POSTGRES_PASSWORD=task_password
+export POSTGRES_HOST=127.0.0.1
+export POSTGRES_PORT=5432
+```
+
+#### 4) Run migrations + create admin user
 
 ```bash
 python manage.py makemigrations
 python manage.py migrate
-```
-
-### 5.4 Create Superuser
-
-```bash
 python manage.py createsuperuser
 ```
 
-Use this account to log into the admin and the application.
-
-### 5.5 Run the Development Server
+#### 5) Start server
 
 ```bash
 python manage.py runserver
 ```
 
-Visit:
+Open:
 
-- `http://127.0.0.1:8000/admin/` – Django admin
-- `http://127.0.0.1:8000/` – Task dashboard
-
----
-
-## 6. Features
-
-### 6.1 CRUD Operations
-
-- **Create** – Use “Create Task” from navbar or sidebar; form validates all fields.
-- **Read** – Dashboard lists all tasks and visualizes them in 3D.
-- **Update** – Edit button opens the form with existing values.
-- **Delete** – Delete button opens a confirmation page before removal.
-
-### 6.2 Search
-
-- Search panel on the left:
-  - Text query matches `title`, `description`, `remarks`.
-  - Status filter matches `status`.
-  - Due date filter matches `due_date`.
-- Implemented via `TaskListView`/`TaskSearchView` with `Q` filters.
-
-### 6.3 3D Task Board
-
-- Implemented in `static/js/task_board.js` and used by `task_list.html`.
-- Each task is a rotating cube:
-  - Todo → blue
-  - In Progress → yellow
-  - Done → green
-  - Blocked → red
-- Hovering over a cube enlarges it using a raycaster and scale animation.
-
-### 6.4 Three.js Starfield Background
-
-- Implemented in `static/js/stars.js` and loaded in `base.html`.
-- Floating stars rendered with `THREE.Points`.
-- Mouse movement changes camera position slightly for a parallax effect.
+- `http://127.0.0.1:8000/admin/` (login)
+- `http://127.0.0.1:8000/` (dashboard)
 
 ---
 
-## 7. Environment & Dependencies
+## General Documentation (not covered above)
 
-- **Python**: 3.10+
-- **Django**: 5.0.6
-- **SQLite**: default Django backend (no extra install)
-- **Three.js**: loaded from CDN in `base.html`
+- **Dashboard**
+  - Shows latest tasks (3D board shows up to 10 cubes in a fixed 2×5 grid)
+  - Search panel filters tasks by query, status, due date
+  - Inline status dropdown allows updating status quickly
+- **3D Task Board**
+  - Cube color indicates status (Todo/Blue, In Progress/Yellow, Done/Green, Blocked/Red)
+  - Clicking a cube opens `/tasks/<id>/` task details page
 
-No additional system dependencies are required beyond a working Python environment.
-
----
-
-## 8. How to Extend
-
-- Replace `created_by` / `last_updated_by` string fields with `ForeignKey` to Django’s `User` model when you need full user management.
-- Add pagination UI for long task lists.
-- Add extra fields like priority, tags, or attachments.
 
