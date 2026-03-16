@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<canvas id="stars-bg"></canvas>
+<div class="tm-dashboard">
+  <section class="tm-panel tm-panel--left">
+    <div class="tm-card">
+      <h2 class="tm-card-title">Search Tasks</h2>
+      <form method="get" action="{% url 'tasks:task_search' %}">
+        <div class="tm-form-group">
+          <label for="id_q">Title / Description / Remarks</label>
+          <input id="id_q" name="q" class="tm-input" value="{{ request.GET.q }}">
+        </div>
+        <div class="tm-form-group">
+          <label for="id_status">Status</label>
+          <select id="id_status" name="status" class="tm-select">
+            <option value="">Any</option>
+            {% if tasks %}
+              {% for key, label in tasks.0.STATUS_CHOICES %}
+                <option value="{{ key }}" {% if request.GET.status == key %}selected{% endif %}>
+                  {{ label }}
+                </option>
+              {% endfor %}
+            {% endif %}
+          </select>
+        </div>
+        <div class="tm-form-group">
+          <label for="id_due_date">Due Date</label>
+          <input id="id_due_date" type="date" name="due_date" class="tm-input"
+                 value="{{ request.GET.due_date }}">
+        </div>
+        <button class="tm-btn tm-btn--primary tm-btn--full">Search</button>
+      </form>
+    </div>
+    <a href="{% url 'tasks:task_create' %}" class="tm-btn tm-btn--gradient tm-btn--full tm-btn--mt">
+      Create Task
+    </a>
+  </section>
+
+  <section class="tm-panel tm-panel--right">
+    <div class="tm-card tm-card--3d">
+      <div class="tm-card-header">
+        <h2 class="tm-card-title">3D Task Board</h2>
+        <p class="tm-card-subtitle">Each cube represents a task. Colors reflect status.</p>
+      </div>
+      <div id="task-3d-container" class="tm-3d-container"></div>
+    </div>
+
+    <div class="tm-card tm-card--table">
+      <div class="tm-card-header">
+        <h2 class="tm-card-title">Task List</h2>
+      </div>
+      <div class="tm-table-wrapper">
+        <table class="tm-table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Due Date</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for task in tasks %}
+              <tr>
+                <td>{{ task.title }}</td>
+                <td>{{ task.due_date|default:"-" }}</td>
+                <td>{{ task.get_status_display }}</td>
+                <td>
+                  <a href="{% url 'tasks:task_edit' task.pk %}" class="tm-btn tm-btn--sm tm-btn--primary">
+                    Edit
+                  </a>
+                  <a href="{% url 'tasks:task_delete' task.pk %}" class="tm-btn tm-btn--sm tm-btn--danger">
+                    Delete
+                  </a>
+                </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="4" class="tm-table-empty">No tasks found.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+  const tasksData = [
+    {% for task in tasks %}
+      {
+        id: {{ task.id }},
+        title: "{{ task.title|escapejs }}",
+        status: "{{ task.status }}",
+      },
+    {% endfor %}
+  ];
+  window.addEventListener("DOMContentLoaded", () => {
+    if (window.initTaskBoard) {
+      window.initTaskBoard("task-3d-container", tasksData);
+    }
+  });
+</script>
+{% endblock %}
+

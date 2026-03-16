@@ -1,0 +1,29 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Task Manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+    <script src="{% static 'js/stars.js' %}" defer></script>
+    {% block extra_head %}{% endblock %}
+  </head>
+  <body class="tm-body">
+    <canvas id="stars-bg"></canvas>
+    <nav class="tm-navbar">
+      <div class="tm-navbar-left">
+        <span class="tm-logo">Task Manager</span>
+      </div>
+      <div class="tm-navbar-right">
+        <a href="{% url 'tasks:task_list' %}" class="tm-nav-link">Dashboard</a>
+        <a href="{% url 'tasks:task_create' %}" class="tm-nav-link">Create Task</a>
+      </div>
+    </nav>
+    <main class="tm-main">
+      {% block content %}{% endblock %}
+    </main>
+  </body>
+</html>
+

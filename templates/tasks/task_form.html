@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="tm-form-page">
+  <div class="tm-card tm-card--form">
+    <h2 class="tm-card-title tm-card-title--center">
+      {% if object %}Edit Task{% else %}Create Task{% endif %}
+    </h2>
+    <p class="tm-card-subtitle tm-card-title--center">
+      Provide clear details so your task is easy to track.
+    </p>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      <div class="tm-form-group">
+        <label for="{{ form.title.id_for_label }}">Title</label>
+        {{ form.title }}
+      </div>
+      <div class="tm-form-group">
+        <label for="{{ form.description.id_for_label }}">Description</label>
+        {{ form.description }}
+      </div>
+      <div class="tm-form-row">
+        <div class="tm-form-group">
+          <label for="{{ form.status.id_for_label }}">Status</label>
+          {{ form.status }}
+        </div>
+        <div class="tm-form-group">
+          <label for="{{ form.due_date.id_for_label }}">Due Date</label>
+          {{ form.due_date }}
+        </div>
+      </div>
+      <div class="tm-form-group">
+        <label for="{{ form.remarks.id_for_label }}">Remarks</label>
+        {{ form.remarks }}
+      </div>
+      <button class="tm-btn tm-btn--gradient tm-btn--full" type="submit">
+        Save Task
+      </button>
+      <a href="{% url 'tasks:task_list' %}" class="tm-btn tm-btn--secondary tm-btn--full tm-btn--mt">
+        Cancel
+      </a>
+    </form>
+  </div>
+</div>
+{% endblock %}
+

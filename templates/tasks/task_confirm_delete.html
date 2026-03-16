@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="tm-form-page">
+  <div class="tm-card tm-card--form">
+    <h2 class="tm-card-title tm-card-title--center">Delete Task</h2>
+    <p class="tm-card-subtitle tm-card-title--center">
+      Are you sure you want to delete "<strong>{{ object.title }}</strong>"?
+    </p>
+    <form method="post">
+      {% csrf_token %}
+      <button class="tm-btn tm-btn--danger tm-btn--full" type="submit">
+        Yes, delete
+      </button>
+      <a href="{% url 'tasks:task_list' %}" class="tm-btn tm-btn--secondary tm-btn--full tm-btn--mt">
+        Cancel
+      </a>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
