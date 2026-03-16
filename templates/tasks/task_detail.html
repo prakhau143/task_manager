@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="tm-form-page">
+  <div class="tm-card tm-card--form">
+    <h2 class="tm-card-title tm-card-title--center">Task Details</h2>
+    <p class="tm-card-subtitle tm-card-title--center">View complete task information.</p>
+
+    <div class="tm-detail">
+      <div class="tm-detail-row">
+        <div class="tm-detail-label">Task Title</div>
+        <div class="tm-detail-value">{{ object.title }}</div>
+      </div>
+      <div class="tm-detail-row">
+        <div class="tm-detail-label">Task Description</div>
+        <div class="tm-detail-value">{{ object.description|default:"-" }}</div>
+      </div>
+      <div class="tm-detail-grid">
+        <div class="tm-detail-row">
+          <div class="tm-detail-label">Task Due Date</div>
+          <div class="tm-detail-value">{{ object.due_date|default:"-" }}</div>
+        </div>
+        <div class="tm-detail-row">
+          <div class="tm-detail-label">Task Status</div>
+          <div class="tm-detail-value">{{ object.get_status_display }}</div>
+        </div>
+      </div>
+      <div class="tm-detail-row">
+        <div class="tm-detail-label">Task Remarks</div>
+        <div class="tm-detail-value">{{ object.remarks|default:"-" }}</div>
+      </div>
+      <div class="tm-detail-grid">
+        <div class="tm-detail-row">
+          <div class="tm-detail-label">Created On</div>
+          <div class="tm-detail-value">{{ object.created_on }}</div>
+        </div>
+        <div class="tm-detail-row">
+          <div class="tm-detail-label">Last Updated On</div>
+          <div class="tm-detail-value">{{ object.last_updated_on }}</div>
+        </div>
+      </div>
+      <div class="tm-detail-grid">
+        <div class="tm-detail-row">
+          <div class="tm-detail-label">Created By</div>
+          <div class="tm-detail-value">{{ object.created_by }}</div>
+        </div>
+        <div class="tm-detail-row">
+          <div class="tm-detail-label">Last Updated By</div>
+          <div class="tm-detail-value">{{ object.last_updated_by }}</div>
+        </div>
+      </div>
+    </div>
+
+    <a href="{% url 'tasks:task_edit' object.pk %}" class="tm-btn tm-btn--primary tm-btn--full tm-btn--mt">
+      Edit Task
+    </a>
+    <a href="{% url 'tasks:task_list' %}" class="tm-btn tm-btn--secondary tm-btn--full tm-btn--mt">
+      Back to Dashboard
+    </a>
+  </div>
+</div>
+{% endblock %}
+

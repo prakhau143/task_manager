@@ -1,8 +1,11 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block extra_head %}
+<script src="{% static 'js/task_board.js' %}" defer></script>
+{% endblock %}
+
 {% block content %}
-<canvas id="stars-bg"></canvas>
 <div class="tm-dashboard">
   <section class="tm-panel tm-panel--left">
     <div class="tm-card">
@@ -33,7 +36,7 @@
         <button class="tm-btn tm-btn--primary tm-btn--full">Search</button>
       </form>
     </div>
-    <a href="{% url 'tasks:task_create' %}" class="tm-btn tm-btn--gradient tm-btn--full tm-btn--mt">
+    <a href="{% url 'tasks:task_create' %}" class="tm-btn tm-btn--gradient tm-btn--full tm-btn--push-bottom">
       Create Task
     </a>
   </section>
@@ -66,7 +69,18 @@
               <tr>
                 <td>{{ task.title }}</td>
                 <td>{{ task.due_date|default:"-" }}</td>
-                <td>{{ task.get_status_display }}</td>
+                <td>
+                  <form method="post" action="{% url 'tasks:task_status' task.pk %}">
+                    {% csrf_token %}
+                    <select name="status" class="tm-select tm-select--inline" onchange="this.form.submit()">
+                      {% for key, label in task.STATUS_CHOICES %}
+                        <option value="{{ key }}" {% if task.status == key %}selected{% endif %}>
+                          {{ label }}
+                        </option>
+                      {% endfor %}
+                    </select>
+                  </form>
+                </td>
                 <td>
                   <a href="{% url 'tasks:task_edit' task.pk %}" class="tm-btn tm-btn--sm tm-btn--primary">
                     Edit
@@ -101,6 +115,10 @@
   window.addEventListener("DOMContentLoaded", () => {
     if (window.initTaskBoard) {
       window.initTaskBoard("task-3d-container", tasksData);
+    } else {
+      // If static file didn't load for some reason, fail gracefully.
+      const el = document.getElementById("task-3d-container");
+      if (el) el.innerHTML = "<div style='padding:16px;color:#9ca3af'>3D board failed to load.</div>";
     }
   });
 </script>

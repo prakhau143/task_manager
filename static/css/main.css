@@ -7,6 +7,12 @@ body.tm-body {
   overflow-x: hidden;
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 #stars-bg {
   position: fixed;
   inset: 0;
@@ -51,6 +57,8 @@ body.tm-body {
 
 .tm-main {
   padding: 1.5rem 2rem 3rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .tm-dashboard {
@@ -66,10 +74,10 @@ body.tm-body {
 
 .tm-card {
   background: rgba(15, 23, 42, 0.86);
-  border-radius: 18px;
+  border-radius: 16px;
   border: 1px solid rgba(148, 163, 184, 0.4);
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8);
-  padding: 1.25rem 1.4rem;
+  padding: 20px;
   backdrop-filter: blur(18px);
 }
 
@@ -146,14 +154,41 @@ body.tm-body {
   font-weight: 500;
   text-decoration: none;
   transition: transform 0.1s ease, box-shadow 0.15s ease, background 0.2s ease;
+  max-width: 100%;
 }
 
-.tm-btn--full {
+/* .tm-btn--full {
   width: 100%;
-}
+} */
 
 .tm-btn--mt {
-  margin-top: 0.75rem;
+  margin-top: 10px;
+}
+
+.tm-btn--push-bottom {
+  margin-top: auto;
+}
+
+.tm-panel--left {
+  gap: 0.75rem;
+}
+
+.tm-panel--left .tm-card {
+  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+}
+
+.tm-panel--left form {
+  flex: 1;
+}
+
+.tm-select--inline {
+  padding: 0.35rem 0.55rem;
+  font-size: 0.82rem;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 190px;
 }
 
 .tm-btn--primary {
@@ -176,8 +211,45 @@ body.tm-body {
 
 .tm-btn--gradient {
   background-image: linear-gradient(90deg, #22d3ee, #3b82f6);
-  color: #0b1120;
+  color: #06121f;
   box-shadow: 0 16px 45px rgba(56, 189, 248, 0.45);
+}
+
+.tm-card {
+  overflow: hidden;
+}
+
+.tm-detail {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.tm-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.tm-detail-row {
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 14px;
+  padding: 0.75rem 0.9rem;
+  background: rgba(2, 6, 23, 0.25);
+}
+
+.tm-detail-label {
+  font-size: 0.78rem;
+  color: #9ca3af;
+  margin-bottom: 0.25rem;
+}
+
+.tm-detail-value {
+  font-size: 0.95rem;
+  color: #e5e7eb;
+  word-break: break-word;
+  white-space: pre-wrap;
 }
 
 .tm-btn--sm {
@@ -196,11 +268,15 @@ body.tm-body {
 
 .tm-3d-container {
   width: 100%;
-  height: 340px;
+  height: 420px;
   border-radius: 16px;
   overflow: hidden;
   border: 1px solid rgba(30, 64, 175, 0.6);
   background: radial-gradient(circle at top, #0f172a, #020617);
+}
+
+.tm-card--3d {
+  padding: 30px;
 }
 
 .tm-table-wrapper {

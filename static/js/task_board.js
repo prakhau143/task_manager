@@ -31,9 +31,9 @@ window.initTaskBoard = function (containerId, tasks) {
   };
 
   const cubes = [];
-  const radius = 6;
+  const perRow = 5;
 
-  tasks.forEach((task, index) => {
+  tasks.slice(0, 10).forEach((task, index) => {
     const geometry = new THREE.BoxGeometry(1, 1, 1);
     const color =
       statusColors[task.status] !== undefined
@@ -46,19 +46,21 @@ window.initTaskBoard = function (containerId, tasks) {
     });
     const cube = new THREE.Mesh(geometry, material);
 
-    const angle = (index / Math.max(tasks.length, 1)) * Math.PI * 2;
-    cube.position.set(
-      Math.cos(angle) * radius,
-      (index % 5) - 2,
-      Math.sin(angle) * radius
-    );
+    const row = Math.floor(index / perRow);
+    const col = index % perRow;
+    // Fixed 2x5 grid (10 cubes max):
+    // Row 1 z=0, Row 2 z=-3
+    // x = (col - 2) * 3  => -6,-3,0,3,6
+    // z = -row * 3       => 0,-3
+    cube.position.set((col - 2) * 3, 0, -row * 3);
 
     cube.userData = task;
     scene.add(cube);
     cubes.push(cube);
   });
 
-  camera.position.set(0, 4, 11);
+  camera.position.set(0, 6, 12);
+  camera.lookAt(0, 0, -1.5);
 
   const raycaster = new THREE.Raycaster();
   const mouse = new THREE.Vector2();
@@ -72,20 +74,33 @@ window.initTaskBoard = function (containerId, tasks) {
 
   renderer.domElement.addEventListener("mousemove", onMouseMove);
 
+  renderer.domElement.addEventListener("click", () => {
+    raycaster.setFromCamera(mouse, camera);
+    const intersects = raycaster.intersectObjects(cubes);
+    if (intersects.length) {
+      const task = intersects[0].object.userData;
+      if (task && task.id) {
+        window.location.href = `/tasks/${task.id}/`;
+      }
+    }
+  });
+
   window.addEventListener("resize", () => {
     const width = container.clientWidth;
     const height = container.clientHeight;
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
     renderer.setSize(width, height);
+    renderer.setPixelRatio(window.devicePixelRatio || 1);
   });
 
   function animate() {
     requestAnimationFrame(animate);
 
-    cubes.forEach((cube, i) => {
-      cube.rotation.y += 0.01;
-      cube.rotation.x += 0.005;
+    cubes.forEach((cube) => {
+      // Smooth, slow rotation only (no floating movement).
+      cube.rotation.y += 0.006;
+      cube.rotation.x += 0.0025;
     });
 
     raycaster.setFromCamera(mouse, camera);
