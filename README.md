@@ -7,7 +7,7 @@ This repository contains a **Task Management web application** built for the Ori
 The application demonstrates the required MVC/MVT areas:
 
 - **Create** tasks from a web UI
-- **Read** tasks from a web UI (dashboard + task details)
+- **Read** tasks from a web UI (dashboard + task details)      
 - **Update** tasks from a web UI (edit form + inline status update)
 - **Delete** tasks from a web UI (delete confirmation)
 - **Search** tasks from a web UI (query + status + due date)
