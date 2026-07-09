@@ -8,7 +8,7 @@ def main() -> None:
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "taskmanager.settings")
     try:
         from django.core.management import execute_from_command_line
-    except ImportError as exc:
+    except ImportError as exc:       
         raise ImportError(
             "Couldn't import Django. Is it installed and available on your "
             "PYTHONPATH environment variable? Did you forget to activate a "
